@@ -218,11 +218,11 @@ func TestGetIOCsReader(t *testing.T) {
 	outer:
 		for ioc := range iocs {
 			for _, wantedIOC := range test.want {
-				if ioc.IOC == wantedIOC.IOC {
+				if ioc.IOC == wantedIOC.IOC && ioc.Type == wantedIOC.Type {
 					continue outer
 				}
 			}
-			t.Errorf("IOCType(%q), did not find %v this in what we wanted %v", test.input, ioc, test.want)
+			t.Errorf("Did not find %v in what we wanted %v", ioc, test.want)
 		}
 	}
 }
