@@ -67,7 +67,7 @@ func TestGetIOCs(t *testing.T) {
 		{"\"http://www.example.com/foo/bar?baz=1\"", []IOC{{"www.example.com", Domain}, {"http://www.example.com/foo/bar?baz=1", URL}}},
 		{"http://www.example.com/foo/bar?baz=1", []IOC{{"www.example.com", Domain}, {"http://www.example.com/foo/bar?baz=1", URL}}},
 		{"http://www.example.com", []IOC{{"www.example.com", Domain}, {"http://www.example.com", URL}}},
-		{"http://example.com/f", []IOC{{"example.com", Domain}, {"http://example.com/f", URL}}},
+		{"http[://]example.com/f", []IOC{{"example.com", Domain}, {"http[://]example.com/f", URL}}},
 		{"http://www.example.com/foo", []IOC{{"www.example.com", Domain}, {"http://www.example.com/foo", URL}}},
 		{"http://www.example.com/foo/", []IOC{{"www.example.com", Domain}, {"http://www.example.com/foo", URL}}},
 		{"https://www.example.com/foo/bar?baz=1", []IOC{{"www.example.com", Domain}, {"https://www.example.com/foo/bar?baz=1", URL}}},
