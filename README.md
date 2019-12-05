@@ -1,6 +1,6 @@
 # Golang IOC Library
 
-This library provides functions to extra IOCs from text, IOCs from a reader, and defang / fang IOCs
+This library provides functions to extract IOCs from text or a reader.  You can also fang and defang IOCs
 
 ## Usage
 
