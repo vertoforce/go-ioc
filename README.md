@@ -29,6 +29,11 @@ for ioc := range iocs {
 // {google[.]com Domain}
 ```
 
+The getting of IOCs from a reader takes use of these two libraries:
+
+- [multiregex](https://github.com/vertoforce/multiregex)
+- [streamregex](https://github.com/vertoforce/streamregex)
+
 ## IOC Methods
 
 - String() string
@@ -45,4 +50,3 @@ for ioc := range iocs {
 
     // Output: {google[.]com Domain}
 ```
-
