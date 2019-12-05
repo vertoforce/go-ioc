@@ -37,8 +37,7 @@ func GetIOCs(data string, getFangedIOCs bool, standardizeDefangs bool) []IOC {
 	return iocs
 }
 
-// GetIOCsReader Get iocs from reader, note that it will note fill out the `Type` field.
-// TODO: fill out Type field somehow
+// GetIOCsReader Get iocs from reader
 func GetIOCsReader(ctx context.Context, reader io.Reader, getFangedIOCs bool, standardizeDefangs bool) chan IOC {
 	// Combine all rules in to a RuleSet
 	ruleSet := multiregex.RuleSet{}
@@ -56,7 +55,13 @@ func GetIOCsReader(ctx context.Context, reader io.Reader, getFangedIOCs bool, st
 		defer close(matches)
 
 		for match := range matchesRaw {
-			ioc := IOC{IOC: string(match)}
+			ioc := IOC{IOC: string(match.Data)}
+			// Find what type this is
+			for t, rule := range iocRegexes {
+				if rule.String() == match.Rule.String() {
+					ioc.Type = t
+				}
+			}
 
 			// Only add if defanged or we are getting all fanged IOCs
 			if !ioc.IsFanged() || getFangedIOCs {

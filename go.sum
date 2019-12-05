@@ -8,6 +8,12 @@ github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZN
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.4.0 h1:2E4SXV/wtOkTonXsotYi4li6zVWxYlZuYNCXe9XRJyk=
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
+github.com/vertoforce/multiregex v0.0.0-20191205214147-7cfc691a8511 h1:uI+xFTYR4G+qqGo1DL3F3TMk1JeKcFQBd2jXyvDzHn4=
+github.com/vertoforce/multiregex v0.0.0-20191205214147-7cfc691a8511/go.mod h1:T+hgfarmSxvIbn5KZ3MUeShsHTxYt+2YsjjiEnJfjTg=
+github.com/vertoforce/streamregex v0.0.0-20191204224809-6c2aea54d18d h1:lzDii3DTFOlBvB4I6ygMC+y0SeXDlsvJySTcQrf2Pt0=
+github.com/vertoforce/streamregex v0.0.0-20191204224809-6c2aea54d18d/go.mod h1:iCqagidmqS8asUBG0F6WCy0VqQfAbDUccs5X0y0BS6M=
+github.com/vertoforce/streamregex v0.0.0-20191205162425-8bba5319ce67 h1:WQ60dG249nod4AYMZXYLC8zi6mwMNcsyuAD6t9U2R7g=
+github.com/vertoforce/streamregex v0.0.0-20191205162425-8bba5319ce67/go.mod h1:iCqagidmqS8asUBG0F6WCy0VqQfAbDUccs5X0y0BS6M=
 golang.org/x/net v0.0.0-20180218175443-cbe0f9307d01/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
 golang.org/x/net v0.0.0-20181114220301-adae6a3d119a/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
 golang.org/x/text v0.3.2/go.mod h1:bEr9sfX3Q8Zfm5fL9x+3itogRgK3+ptLWKqgva+5dAk=
