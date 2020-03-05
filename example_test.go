@@ -12,7 +12,7 @@ func ExampleGetIOCs() {
 	iocs := GetIOCs(data, false, true)
 	fmt.Println(iocs)
 
-	// Output: [{google[.]com Domain} {hxxp[://]google[.]com/path URL}]
+	// Output: [google[.]com|Domain hxxp[://]google[.]com/path|URL]
 }
 
 func ExampleGetIOCsReader() {
@@ -23,14 +23,14 @@ func ExampleGetIOCsReader() {
 		fmt.Println(ioc)
 	}
 
-	// Output: {hxxp[://]google[.]com/path URL}
-	// {google[.]com Domain}
+	// Output: hxxp[://]google[.]com/path|URL
+	// google[.]com|Domain
 }
 
 func ExampleIOC_Defang() {
-	ioc := IOC{IOC: "google.com", Type: Domain}
+	ioc := &IOC{IOC: "google.com", Type: Domain}
 	ioc = ioc.Defang()
 	fmt.Println(ioc)
 
-	// Output: {google[.]com Domain}
+	// Output: google[.]com|Domain
 }

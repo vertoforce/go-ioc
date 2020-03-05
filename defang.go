@@ -35,17 +35,18 @@ var defangReplacements = defangMap{
 }
 
 // Defang Takes an IOC and defangs it using the standard defrangReplacements
-func (ioc IOC) Defang() IOC {
-	iocNew := IOC{ioc.IOC, ioc.Type}
+func (ioc *IOC) Defang() *IOC {
+	copy := *ioc
+	ioc = &copy
 
 	// Just do a string replace on each
-	if replacements, ok := defangReplacements[iocNew.Type]; ok {
+	if replacements, ok := defangReplacements[ioc.Type]; ok {
 		for _, fangPair := range replacements {
-			iocNew.IOC = strings.ReplaceAll(iocNew.IOC, fangPair.fanged, fangPair.defanged)
+			ioc.IOC = strings.ReplaceAll(ioc.IOC, fangPair.fanged, fangPair.defanged)
 		}
 	}
 
-	return iocNew
+	return ioc
 }
 
 // Fang Structures to fang using all possible defangs
@@ -77,39 +78,40 @@ var fangReplacements = map[Type][]regexReplacement{
 }
 
 // Fang Takes an IOC and removes the defanging stuff from it
-func (ioc IOC) Fang() IOC {
-	iocNew := IOC{ioc.IOC, ioc.Type}
+func (ioc *IOC) Fang() *IOC {
+	copy := *ioc
+	ioc = &copy
 
 	// String replace all defangs in our standard set
-	if replacements, ok := defangReplacements[iocNew.Type]; ok {
+	if replacements, ok := defangReplacements[ioc.Type]; ok {
 		for _, fangPair := range replacements {
-			iocNew.IOC = strings.ReplaceAll(iocNew.IOC, fangPair.defanged, fangPair.fanged)
+			ioc.IOC = strings.ReplaceAll(ioc.IOC, fangPair.defanged, fangPair.fanged)
 		}
 	}
 
 	// Regex replace everything from the fang replacements
-	if replacements, ok := fangReplacements[iocNew.Type]; ok {
+	if replacements, ok := fangReplacements[ioc.Type]; ok {
 		for _, regexReplacement := range replacements {
 			// Offset is incase we shrink the string and need to offset locations
 			offset := 0
 
 			// Get indexes of replacements and replace them
-			toReplace := regexReplacement.pattern.FindAllStringIndex(iocNew.IOC, -1)
+			toReplace := regexReplacement.pattern.FindAllStringIndex(ioc.IOC, -1)
 			for _, location := range toReplace {
 				// Update this found string
-				startSize := len(iocNew.IOC)
-				iocNew.IOC = iocNew.IOC[0:location[0]-offset] + regexReplacement.replace + iocNew.IOC[location[1]-offset:len(iocNew.IOC)]
+				startSize := len(ioc.IOC)
+				ioc.IOC = ioc.IOC[0:location[0]-offset] + regexReplacement.replace + ioc.IOC[location[1]-offset:len(ioc.IOC)]
 				// Update offset with how much the string shrunk (or grew)
-				offset += startSize - len(iocNew.IOC)
+				offset += startSize - len(ioc.IOC)
 			}
 		}
 	}
 
-	return iocNew
+	return ioc
 }
 
 // IsFanged Takes an IOC and returns if it is fanged.  Non fanging types (bitcoin, hashes, file, cve) are always determined to not be fanged
-func (ioc IOC) IsFanged() bool {
+func (ioc *IOC) IsFanged() bool {
 	if ioc.Type == Bitcoin ||
 		ioc.Type == MD5 ||
 		ioc.Type == SHA1 ||
