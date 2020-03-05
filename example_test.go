@@ -31,6 +31,9 @@ func ExampleIOC_Defang() {
 	ioc := &IOC{IOC: "google.com", Type: Domain}
 	ioc = ioc.Defang()
 	fmt.Println(ioc)
+	ioc = ioc.Fang()
+	fmt.Println(ioc)
 
 	// Output: google[.]com|Domain
+	// google.com|Domain
 }
