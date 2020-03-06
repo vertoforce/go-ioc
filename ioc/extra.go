@@ -3,6 +3,7 @@ package ioc
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"reflect"
@@ -24,7 +25,11 @@ func GetIOCsFromRSS(ctx context.Context, url string) ([]*IOC, error) {
 	var iocs []*IOC
 
 	for i := range feed.Items {
-		iocsI, err := GetIOCsFromURLPage(feed.Items[i].Link)
+		req, err := http.NewRequest("GET", feed.Items[i].Link, nil)
+		if err != nil {
+			return nil, err
+		}
+		iocsI, err := GetIOCsFromURLPage(req)
 		if err != nil {
 			return nil, err
 		}
@@ -43,8 +48,12 @@ func GetIOCsFromRSS(ctx context.Context, url string) ([]*IOC, error) {
 }
 
 // GetIOCsFromURLPage Given a url get IOCs from the _text_ of the page
-func GetIOCsFromURLPage(url string) ([]*IOC, error) {
-	resp, err := http.Get(url)
+func GetIOCsFromURLPage(req *http.Request) ([]*IOC, error) {
+	if req == nil {
+		return nil, fmt.Errorf("no request")
+	}
+	resp, err := http.DefaultClient.Do(req)
+
 	if err != nil {
 		return nil, err
 	}

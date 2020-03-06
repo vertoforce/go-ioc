@@ -3,6 +3,7 @@ package ioc
 import (
 	"context"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -30,7 +31,7 @@ func TestGetIOCsFromRSS(t *testing.T) {
 
 func TestGetIOCsFromURL(t *testing.T) {
 	// Test failure
-	_, err := GetIOCsFromURLPage("SGKHSLJFKS")
+	_, err := GetIOCsFromURLPage(nil)
 	if err == nil {
 		t.Errorf("Should have errored on that URL")
 	}
@@ -68,7 +69,12 @@ func TestGetIOCsFromURL(t *testing.T) {
 	}
 
 	for te := range tests {
-		iocs, err := GetIOCsFromURLPage(tests[te].URL)
+		req, err := http.NewRequest("GET", tests[te].URL, nil)
+		if err != nil {
+			t.Errorf("Errored on this test: " + tests[te].URL)
+			continue
+		}
+		iocs, err := GetIOCsFromURLPage(req)
 		if err != nil {
 			t.Errorf("Errored on this test: " + tests[te].URL)
 		}
