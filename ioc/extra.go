@@ -48,7 +48,7 @@ func GetIOCsFromRSS(ctx context.Context, url string) ([]*IOC, error) {
 }
 
 // GetIOCsFromURLPage Given a url get IOCs from the _text_ of the page
-func GetIOCsFromURLPage(req *http.Request) ([]*IOC, error) {
+func GetIOCsFromURLPage(req *http.Request) ([]IOC, error) {
 	if req == nil {
 		return nil, fmt.Errorf("no request")
 	}
@@ -68,7 +68,7 @@ func GetIOCsFromURLPage(req *http.Request) ([]*IOC, error) {
 }
 
 // GetIOCsFromHTML Takes a html page as a string and will extract the IOCs
-func GetIOCsFromHTML(htmlContent *string) ([]*IOC, error) {
+func GetIOCsFromHTML(htmlContent *string) ([]IOC, error) {
 	if htmlContent == nil {
 		return nil, errors.New("Nil string pointer")
 	}
@@ -78,19 +78,19 @@ func GetIOCsFromHTML(htmlContent *string) ([]*IOC, error) {
 		return nil, err
 	}
 
-	iocs := []*IOC{}
+	iocs := []IOC{}
 	getIOCsFromSelection(doc.Selection, &iocs, 0)
 
 	return iocs, nil
 }
 
 // getIOCsFromSelection Takes a goquery selection and recursively finds all the IOCs
-func getIOCsFromSelection(sel *goquery.Selection, iocs *[]*IOC, depth int) {
+func getIOCsFromSelection(sel *goquery.Selection, iocs *[]IOC, depth int) {
 	if depth >= maxHTMLRecursionDepth {
 		return
 	}
 
-	addIfUnique := func(iocIn *IOC) {
+	addIfUnique := func(iocIn IOC) {
 		for _, ioc := range *iocs {
 			if reflect.DeepEqual(ioc, iocIn) {
 				return
