@@ -11,7 +11,7 @@ import (
 
 var stdinCommand = &cobra.Command{
 	Use:   "stdin",
-	Short: "Analyze stdin",
+	Short: "Find IOCs from stdin",
 
 	Run: func(cmd *cobra.Command, args []string) {
 		stdin, err := ioutil.ReadAll(os.Stdin)
