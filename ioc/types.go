@@ -7,35 +7,41 @@ import (
 	"text/tabwriter"
 )
 
-// IOC Struct to store an IOC and it's type
-type IOC struct {
-	IOC  string
-	Type Type // hash, url, domain, file
+// IOC Indicator of compromise
+type IOC string
+
+func (ioc IOC) Type() Type {
+	for _, Type := range Types {
+		if iocRegexes[Type].MatchString(string(ioc)) {
+			return Type
+		}
+	}
+	return Unknown
 }
 
 // String Takes an IOC and prints in csv form: IOC|Type
-func (ioc *IOC) String() string {
-	return ioc.IOC + "|" + ioc.Type.String()
+func (ioc IOC) String() string {
+	return fmt.Sprintf("%s|%s", ioc, ioc.Type())
 }
 
 // Type Type of IOC (bitcoin, sha1, etc)
-type Type int
+type Type string
 
 // Types
-//go:generate stringer -type=Type
 const (
-	Bitcoin Type = iota
-	MD5
-	SHA1
-	SHA256
-	SHA512
-	Domain
-	Email
-	IPv4
-	IPv6
-	URL
-	File
-	CVE
+	Unknown Type = "Unknown"
+	Bitcoin      = "Bitcoin"
+	MD5          = "MD5"
+	SHA1         = "SHA1"
+	SHA256       = "SHA256"
+	SHA512       = "SHA512"
+	Domain       = "Domain"
+	Email        = "Email"
+	IPv4         = "IPv4"
+	IPv6         = "IPv6"
+	URL          = "URL"
+	File         = "File"
+	CVE          = "CVE"
 )
 
 // Types of all IOCs
@@ -60,14 +66,14 @@ var Types = []Type{
 func SortByType(iocs []*IOC) []*IOC {
 	copy := iocs
 	sort.Slice(copy, func(i, j int) bool {
-		return iocs[i].Type < iocs[j].Type
+		return iocs[i].Type() < iocs[j].Type()
 	})
 	return copy
 }
 
 // PrintIOCs Takes IOCs and prints them according to the format desired
 // Format can be csv or table
-func PrintIOCs(iocs []*IOC, format string) string {
+func PrintIOCs(iocs []IOC, format string) string {
 	switch format {
 	case "csv":
 		return PrintIOCsCSV(iocs)
@@ -79,7 +85,7 @@ func PrintIOCs(iocs []*IOC, format string) string {
 }
 
 // PrintIOCsCSV Takes []IOC and returns them in a csv format
-func PrintIOCsCSV(iocs []*IOC) string {
+func PrintIOCsCSV(iocs []IOC) string {
 	ret := ""
 
 	for i, ioc := range iocs {
@@ -93,7 +99,7 @@ func PrintIOCsCSV(iocs []*IOC) string {
 }
 
 // PrintIOCsTable Takes []IOC and returns them in a csv format
-func PrintIOCsTable(iocs []*IOC) string {
+func PrintIOCsTable(iocs []IOC) string {
 	w := new(tabwriter.Writer)
 
 	ret := new(bytes.Buffer)
@@ -101,13 +107,13 @@ func PrintIOCsTable(iocs []*IOC) string {
 
 	// Loop through and set table
 	var lastType Type
-	lastType = -1
+	lastType = ""
 	for _, ioc := range iocs {
-		if ioc.Type != lastType {
-			fmt.Fprintln(w, "# "+ioc.Type.String())
-			lastType = ioc.Type
+		if ioc.Type() != lastType {
+			fmt.Fprintln(w, "# "+ioc.Type())
+			lastType = ioc.Type()
 		}
-		fmt.Fprintln(w, ioc.IOC+"\t"+ioc.Type.String())
+		fmt.Fprintf(w, "%s\t%s", ioc, ioc.Type())
 	}
 
 	w.Flush()
@@ -115,26 +121,26 @@ func PrintIOCsTable(iocs []*IOC) string {
 }
 
 // PrintIOCsStats Given iocs print the stats associated with them
-func PrintIOCsStats(iocs []*IOC) string {
+func PrintIOCsStats(iocs []IOC) string {
 	stats := GetIOCsCounts(iocs)
 
 	ret := ""
 	for iocType, count := range stats {
-		ret += fmt.Sprintf("%s: %d\n", iocType.String(), count)
+		ret += fmt.Sprintf("%s: %d\n", iocType, count)
 	}
 
 	return ret
 }
 
 // GetIOCsCounts Given []IOC return count of each
-func GetIOCsCounts(iocs []*IOC) map[Type]int {
+func GetIOCsCounts(iocs []IOC) map[Type]int {
 	stats := make(map[Type]int)
 
 	for _, ioc := range iocs {
-		if _, ok := stats[ioc.Type]; ok {
-			stats[ioc.Type]++
+		if _, ok := stats[ioc.Type()]; ok {
+			stats[ioc.Type()]++
 		} else {
-			stats[ioc.Type] = 1
+			stats[ioc.Type()] = 1
 		}
 	}
 
