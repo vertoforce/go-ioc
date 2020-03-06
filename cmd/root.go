@@ -19,10 +19,10 @@ var printFanged bool
 var getFangedIOCs bool
 
 var rootCmd = &cobra.Command{
-	Use:     "IOC [command]",
-	Short:   "IOC is a tool to extract IOCs from various sources",
-	Long:    "IOC can be used to extract IOCs from articles, RSS feeds, and text.  Simply use the commands like `url` or `rss` to get all IOCs from that source.  IOC will only look for IOCs in the `text` of HTML when crawling web pages.  This means all the `href`s and other html tag data will not be included.",
-	Example: "IOC url https://google.com",
+	Use:     "go-ioc [command]",
+	Short:   "go-ioc is a tool to extract IOCs from various sources",
+	Long:    "go-ioc can be used to extract IOCs from articles, RSS feeds, and text.  Simply use the commands like `url` or `rss` to get all IOCs from that source.  IOC will only look for IOCs in the `text` of HTML when crawling web pages.  This means all the `href`s and other html tag data will not be included.",
+	Example: "go-ioc url https://google.com",
 
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("No command.")
@@ -43,7 +43,6 @@ func init() {
 	rootCmd.AddCommand(rssCommand)
 	rootCmd.AddCommand(gendocsCommand)
 	rootCmd.AddCommand(stdinCommand)
-	rootCmd.AddCommand(typesCommand)
 	rootCmd.AddCommand(defangCommand)
 
 	// Root flags
