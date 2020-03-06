@@ -57,7 +57,7 @@ var Types = []Type{
 // -- []IOC helpers --
 
 // SortByType takes a group of IOCs and sorts them by their type
-func SortByType(iocs []IOC) []IOC {
+func SortByType(iocs []*IOC) []*IOC {
 	copy := iocs
 	sort.Slice(copy, func(i, j int) bool {
 		return iocs[i].Type < iocs[j].Type
@@ -67,7 +67,7 @@ func SortByType(iocs []IOC) []IOC {
 
 // PrintIOCs Takes IOCs and prints them according to the format desired
 // Format can be csv or table
-func PrintIOCs(iocs []IOC, format string) string {
+func PrintIOCs(iocs []*IOC, format string) string {
 	switch format {
 	case "csv":
 		return PrintIOCsCSV(iocs)
@@ -79,7 +79,7 @@ func PrintIOCs(iocs []IOC, format string) string {
 }
 
 // PrintIOCsCSV Takes []IOC and returns them in a csv format
-func PrintIOCsCSV(iocs []IOC) string {
+func PrintIOCsCSV(iocs []*IOC) string {
 	ret := ""
 
 	for i, ioc := range iocs {
@@ -93,7 +93,7 @@ func PrintIOCsCSV(iocs []IOC) string {
 }
 
 // PrintIOCsTable Takes []IOC and returns them in a csv format
-func PrintIOCsTable(iocs []IOC) string {
+func PrintIOCsTable(iocs []*IOC) string {
 	w := new(tabwriter.Writer)
 
 	ret := new(bytes.Buffer)
@@ -115,7 +115,7 @@ func PrintIOCsTable(iocs []IOC) string {
 }
 
 // PrintIOCsStats Given iocs print the stats associated with them
-func PrintIOCsStats(iocs []IOC) string {
+func PrintIOCsStats(iocs []*IOC) string {
 	stats := GetIOCsCounts(iocs)
 
 	ret := ""
@@ -127,7 +127,7 @@ func PrintIOCsStats(iocs []IOC) string {
 }
 
 // GetIOCsCounts Given []IOC return count of each
-func GetIOCsCounts(iocs []IOC) map[Type]int {
+func GetIOCsCounts(iocs []*IOC) map[Type]int {
 	stats := make(map[Type]int)
 
 	for _, ioc := range iocs {
