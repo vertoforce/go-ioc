@@ -37,6 +37,12 @@ Flags:
 Use "go-ioc [command] --help" for more information about a command.
 ```
 
+### Docker usage
+
+```sh
+docker run -it vertoforce/go-ioc help
+```
+
 ## Library Usage
 
 ### GetIOCs
