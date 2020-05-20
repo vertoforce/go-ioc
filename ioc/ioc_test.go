@@ -7,6 +7,28 @@ import (
 	"testing"
 )
 
+func TestParseIOC(t *testing.T) {
+	tests := []struct {
+		ioc  string
+		want *IOC
+	}{
+		{
+			"test@test.com",
+			&IOC{Type: Email, IOC: "test@test.com"},
+		},
+		{
+			"https://test.com/asdf",
+			&IOC{Type: URL, IOC: "https://test.com/asdf"},
+		},
+	}
+
+	for i, test := range tests {
+		if out := ParseIOC(test.ioc); !reflect.DeepEqual(out, test.want) {
+			t.Errorf("Error on test %d", i)
+		}
+	}
+}
+
 func TestGetIOCs(t *testing.T) {
 	// Test without standardizing defangs
 	tests := []struct {
