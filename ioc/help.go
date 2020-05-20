@@ -4,8 +4,8 @@ import (
 	"sort"
 )
 
-// UniqueStringSlice Make slice contain only unique values
-func UniqueStringSlice(slice []string) []string {
+// uniqueStringSlice Make slice contain only unique values
+func uniqueStringSlice(slice []string) []string {
 	if len(slice) <= 1 {
 		return slice
 	}
