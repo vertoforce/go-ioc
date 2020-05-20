@@ -12,6 +12,21 @@ const (
 	maxHTMLRecursionDepth = 100
 )
 
+// ParseIOC Parses a single IOC and gets its type.
+// It will only return the highest IOC type (so if it's an email, it will return the email, not the domain in the email)
+func ParseIOC(ioc string) *IOC {
+	iocs := GetIOCs(ioc, true, false)
+	ret := &IOC{}
+	for _, ioc := range iocs {
+		// Only return the "highest" IOC
+		if ioc.Type > ret.Type {
+			ret = ioc
+		}
+	}
+
+	return ret
+}
+
 // GetIOCs Return a slice of IOCs from the provided data
 func GetIOCs(data string, getFangedIOCs bool, standardizeDefangs bool) []*IOC {
 	var iocs []*IOC

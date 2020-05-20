@@ -21,10 +21,11 @@ func (ioc *IOC) String() string {
 // Type Type of IOC (bitcoin, sha1, etc)
 type Type int
 
-// Types
+// Types ordered in list of largest to smallest (so an email is > domain since an email contains a domain)
 //go:generate stringer -type=Type
 const (
-	Bitcoin Type = iota
+	Unknown Type = iota
+	Bitcoin
 	MD5
 	SHA1
 	SHA256
