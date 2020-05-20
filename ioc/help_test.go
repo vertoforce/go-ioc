@@ -25,7 +25,7 @@ func TestUniqueStringSlice(t *testing.T) {
 	}
 
 	for i, test := range tests {
-		if got := UniqueStringSlice(test.input); !reflect.DeepEqual(got, test.want) {
+		if got := uniqueStringSlice(test.input); !reflect.DeepEqual(got, test.want) {
 			t.Errorf("Incorrect result for test: " + string(i))
 		}
 	}

@@ -17,10 +17,10 @@ func GetIOCs(data string, getFangedIOCs bool, standardizeDefangs bool) []*IOC {
 	var iocs []*IOC
 
 	// Loop through the types to find and search the provided data
-	for _, Type := range Types {
-		matches := UniqueStringSlice(iocRegexes[Type].FindAllString(data, -1))
+	for iocType, regex := range iocRegexes {
+		matches := uniqueStringSlice(regex.FindAllString(data, -1))
 		for _, match := range matches {
-			ioc := &IOC{IOC: match, Type: Type}
+			ioc := &IOC{IOC: match, Type: iocType}
 
 			// Only add if defanged or we are getting all fanged IOCs
 			if !ioc.IsFanged() || getFangedIOCs {
