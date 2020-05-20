@@ -11,4 +11,5 @@ require (
 	github.com/vertoforce/multiregex v0.0.0-20200305221808-10dce2b47221
 	golang.org/x/net v0.0.0-20200301022130-244492dfa37a // indirect
 	golang.org/x/text v0.3.2 // indirect
+	golang.org/x/tools v0.0.0-20200520220537-cf2d1e09c845 // indirect
 )
