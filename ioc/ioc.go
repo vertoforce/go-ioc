@@ -2,10 +2,9 @@ package ioc
 
 import (
 	"context"
+	"github.com/vertoforce/multiregex"
 	"io"
 	"io/ioutil"
-
-	"github.com/vertoforce/multiregex"
 )
 
 const (
@@ -46,6 +45,12 @@ func GetIOCs(data string, getFangedIOCs bool, standardizeDefangs bool) []*IOC {
 
 				iocs = append(iocs, ioc)
 			}
+		}
+	}
+
+	for _, i := range iocs {
+		if i.Type == CPE {
+			iocs = []*IOC{i}
 		}
 	}
 

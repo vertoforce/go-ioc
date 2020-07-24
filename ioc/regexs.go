@@ -30,5 +30,9 @@ var iocRegexes = map[Type]*regexp.Regexp{
 	// Files
 	File: regexp.MustCompile(`(([\w\-]+)\.)+(docx|doc|csv|pdf|xlsx|xls|rtf|txt|pptx|ppt|pages|keynote|numbers|exe|dll|jar|flv|swf|jpeg|jpg|gif|png|tiff|bmp|plist|app|pkg|html|htm|php|jsp|asp|zip|zipx|7z|rar|tar|gz)`),
 	// Utility
-	CVE: regexp.MustCompile(`((CVE|cve)-\d{4}-\d{4,7})`),
+	CVE: regexp.MustCompile(`(?i)CVE-\d{4}-\d{4,7}`),
+	CAPEC: regexp.MustCompile(`(?i)CAPEC-\d+`),
+	CWE: regexp.MustCompile(`(?i)CWE-\d+`),
+	// support for URI and WFN CPE 2.2 and 2.3 bindings
+	CPE: regexp.MustCompile(`(?i)cpe(:2[.]3)?:[/]?[aoh*\-](:[?*]?([a-z0-9\-._]|([\\][\\?*!"#$%&'()+,/:;<=>@[\]^{|}~])|[%~])*[?*\-]?){0,5}(:([a-z]{2,3}(-([a-z]{2}|[0-9]{3}))?)|[*\-])?(:[?*]?([a-z0-9\-._]|([\\][\\?*!"#$%&'()+,/:;<=>@[\]^{|}~])|[%~])*[?*\-]?){0,5}`),
 }
