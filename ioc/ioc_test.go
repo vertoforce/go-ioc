@@ -131,6 +131,17 @@ func TestGetIOCs(t *testing.T) {
 		{"CVE-2100-0000", []*IOC{{"CVE-2100-0000", CVE}}},
 		{"CVE-2016-00000", []*IOC{{"CVE-2016-00000", CVE}}},
 		{"CVE-20100-0000", nil},
+		{"CAPEC-13", []*IOC{{"CAPEC-13", CAPEC}}},
+		{"CWE-200", []*IOC{{"CWE-200", CWE}}},
+		{"cpe:2.3:a:openbsd:openssh:7.5:-:*:*:*:*:*:*", []*IOC{{"cpe:2.3:a:openbsd:openssh:7.5:-:*:*:*:*:*:*", CPE}}},
+		{"cpe:/a:openbsd:openssh:7.5:-", []*IOC{{"cpe:/a:openbsd:openssh:7.5:-", CPE}}},
+		{"cpe:/a:microsoft:internet_explorer:8.%02:sp%01", []*IOC{{"cpe:/a:microsoft:internet_explorer:8.%02:sp%01", CPE}}},
+		{"cpe:/a:hp:insight_diagnostics:7.4.0.1570:-:~~online~win2003~x64~", []*IOC{{"cpe:/a:hp:insight_diagnostics:7.4.0.1570:-:~~online~win2003~x64~", CPE}}},
+		{"cpe:2.3:a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*:*:*", []*IOC{{"cpe:2.3:a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*:*:*", CPE}}},
+		{"cpe:2.3:a:microsoft:internet_explorer:8.*:sp?:*:*:*:*:*:*", []*IOC{{"cpe:2.3:a:microsoft:internet_explorer:8.*:sp?:*:*:*:*:*:*", CPE}}},
+		{"cpe:2.3:a:hp:insight:7.4.0.1570:-:*:*:online:win2003:x64:*", []*IOC{{"cpe:2.3:a:hp:insight:7.4.0.1570:-:*:*:online:win2003:x64:*", CPE}}},
+		{"cpe:2.3:a:hp:openview_network_manager:7.51:*:*:*:*:linux:*:*", []*IOC{{"cpe:2.3:a:hp:openview_network_manager:7.51:*:*:*:*:linux:*:*", CPE}}},
+		{"cpe:2.3:a:foo\\\\bar:big\\$money_2010:*:*:*:*:special:ipod_touch:80gb:*", []*IOC{{"cpe:2.3:a:foo\\\\bar:big\\$money_2010:*:*:*:*:special:ipod_touch:80gb:*", CPE}}},
 
 		// Misc
 		{"1.1.1.1 google.com 1.1.1.1", []*IOC{
