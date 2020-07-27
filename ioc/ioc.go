@@ -48,12 +48,6 @@ func GetIOCs(data string, getFangedIOCs bool, standardizeDefangs bool) []*IOC {
 		}
 	}
 
-	for _, i := range iocs {
-		if i.Type == CPE {
-			iocs = []*IOC{i}
-		}
-	}
-
 	return iocs
 }
 
