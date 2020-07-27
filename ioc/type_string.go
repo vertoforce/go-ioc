@@ -21,11 +21,12 @@ func _() {
 	_ = x[URL-10]
 	_ = x[File-11]
 	_ = x[CVE-12]
+	_ = x[CAPEC-13]
 }
 
-const _Type_name = "UnknownBitcoinMD5SHA1SHA256SHA512DomainEmailIPv4IPv6URLFileCVE"
+const _Type_name = "UnknownBitcoinMD5SHA1SHA256SHA512DomainEmailIPv4IPv6URLFileCVECAPEC"
 
-var _Type_index = [...]uint8{0, 7, 14, 17, 21, 27, 33, 39, 44, 48, 52, 55, 59, 62}
+var _Type_index = [...]uint8{0, 7, 14, 17, 21, 27, 33, 39, 44, 48, 52, 55, 59, 62, 67}
 
 func (i Type) String() string {
 	if i < 0 || i >= Type(len(_Type_index)-1) {
