@@ -2,10 +2,9 @@ package ioc
 
 import (
 	"context"
+	"github.com/vertoforce/multiregex"
 	"io"
 	"io/ioutil"
-
-	"github.com/vertoforce/multiregex"
 )
 
 const (

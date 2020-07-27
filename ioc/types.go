@@ -37,6 +37,9 @@ const (
 	URL
 	File
 	CVE
+	CAPEC
+	CWE
+	CPE
 )
 
 // Types of all IOCs
@@ -53,6 +56,9 @@ var Types = []Type{
 	URL,
 	File,
 	CVE,
+	CAPEC,
+	CWE,
+	CPE,
 }
 
 // -- []IOC helpers --
