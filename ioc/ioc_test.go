@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+
+	testify "github.com/stretchr/testify/assert"
 )
 
 func TestParseIOC(t *testing.T) {
@@ -159,11 +161,15 @@ func TestGetIOCs(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		if iocs := GetIOCs(test.input, true, false); !reflect.DeepEqual(iocs, test.want) {
-			t.Errorf("IOCType(%q), found %v =/= wanted %v", test.input, iocs, test.want)
-		}
-	}
+		t.Run(test.input, func(t *testing.T) {
+			if iocs := GetIOCs(test.input, true, false); !testify.ElementsMatch(t, iocs, test.want) {
+				t.Errorf("IOCType(%q), found %v =/= wanted %v", test.input, iocs, test.want)
+			}
+		})
 
+	}
+}
+func TestStandardizedDefangs(t *testing.T) {
 	testsStandardizedDefangs := []struct {
 		input string
 		want  []*IOC
@@ -182,11 +188,15 @@ func TestGetIOCs(t *testing.T) {
 	}
 
 	for _, test := range testsStandardizedDefangs {
-		if iocs := GetIOCs(test.input, true, true); !reflect.DeepEqual(iocs, test.want) {
-			t.Errorf("[standardizedDefang=true] IOCType(%q), found %v =/= wanted %v", test.input, iocs, test.want)
-		}
-	}
+		t.Run(test.input, func(t *testing.T) {
+			if iocs := GetIOCs(test.input, true, true); !reflect.DeepEqual(iocs, test.want) {
+				t.Errorf("[standardizedDefang=true] IOCType(%q), found %v =/= wanted %v", test.input, iocs, test.want)
+			}
+		})
 
+	}
+}
+func TestAllFanged(t *testing.T) {
 	testsAllFanged := []struct {
 		input string
 		want  []*IOC
@@ -205,9 +215,11 @@ func TestGetIOCs(t *testing.T) {
 	}
 
 	for _, test := range testsAllFanged {
-		if iocs := GetIOCs(test.input, false, true); !reflect.DeepEqual(iocs, test.want) {
-			t.Errorf("[allFanged=false] IOCType(%q), found %v =/= wanted %v", test.input, iocs, test.want)
-		}
+		t.Run(test.input, func(t *testing.T) {
+			if iocs := GetIOCs(test.input, false, true); !reflect.DeepEqual(iocs, test.want) {
+				t.Errorf("[allFanged=false] IOCType(%q), found %v =/= wanted %v", test.input, iocs, test.want)
+			}
+		})
 	}
 }
 
@@ -246,16 +258,18 @@ func TestGetIOCsReader(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		iocs := GetIOCsReader(context.Background(), strings.NewReader(test.input), true, false)
 
-	outer:
-		for ioc := range iocs {
-			for _, wantedIOC := range test.want {
-				if ioc.IOC == wantedIOC.IOC && ioc.Type == wantedIOC.Type {
-					continue outer
+		t.Run(test.input, func(t *testing.T) {
+			iocs := GetIOCsReader(context.Background(), strings.NewReader(test.input), true, false)
+		outer:
+			for ioc := range iocs {
+				for _, wantedIOC := range test.want {
+					if ioc.IOC == wantedIOC.IOC && ioc.Type == wantedIOC.Type {
+						continue outer
+					}
 				}
+				t.Errorf("Did not find %v in what we wanted %v", ioc, test.want)
 			}
-			t.Errorf("Did not find %v in what we wanted %v", ioc, test.want)
-		}
+		})
 	}
 }

@@ -1,6 +1,7 @@
 package ioc
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 )
@@ -26,7 +27,7 @@ func TestUniqueStringSlice(t *testing.T) {
 
 	for i, test := range tests {
 		if got := uniqueStringSlice(test.input); !reflect.DeepEqual(got, test.want) {
-			t.Errorf("Incorrect result for test: " + string(i))
+			t.Errorf("Incorrect result for test: " + fmt.Sprint(i))
 		}
 	}
 }

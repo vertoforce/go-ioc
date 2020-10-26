@@ -2,6 +2,7 @@ package ioc
 
 import (
 	"context"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -105,7 +106,11 @@ func TestGetIOCsFromURL(t *testing.T) {
 
 func BenchmarkGetIOCsFromHTML(b *testing.B) {
 	var articles []string
-	filepath.Walk("articles", func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk("articles", func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			fmt.Printf("prevent panic by handling failure accessing a path %q: %v\n", path, err)
+			return err
+		}
 		fileContentsB, err := ioutil.ReadFile(path)
 		if err != nil {
 			return nil
@@ -114,9 +119,16 @@ func BenchmarkGetIOCsFromHTML(b *testing.B) {
 		articles = append(articles, fileContents)
 		return nil
 	})
+	if err != nil {
+		b.Fatalf("Failed to walk files: %s", err)
+	}
 	for n := 0; n < b.N; n++ {
 		for _, a := range articles {
-			GetIOCsFromHTML(&a)
+			_, err = GetIOCsFromHTML(&a)
+			if err != nil {
+				b.Errorf("Failed to get IOCS from HTML: %s", err)
+			}
+
 		}
 	}
 }
@@ -158,7 +170,7 @@ func TestIOCsSortByType(t *testing.T) {
 	}
 	for i, test := range tests {
 		if got := SortByType(test.input); !reflect.DeepEqual(got, test.want) {
-			t.Errorf("Failed to get desired result on test " + string(i))
+			t.Errorf("Failed to get desired result on test " + fmt.Sprint(i))
 		}
 	}
 }
@@ -207,7 +219,7 @@ func TestGetIOCsStats(t *testing.T) {
 
 	for i, test := range tests {
 		if got := GetIOCsCounts(test.input); !reflect.DeepEqual(got, test.want) {
-			t.Errorf("Failed to get desired result on test " + string(i))
+			t.Errorf("Failed to get desired result on test " + fmt.Sprint(i))
 		}
 	}
 }
