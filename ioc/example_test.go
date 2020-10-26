@@ -3,6 +3,7 @@ package ioc
 import (
 	"context"
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -10,6 +11,12 @@ func ExampleGetIOCs() {
 	data := `this is a bad url http[://]google[.]com/path`
 
 	iocs := GetIOCs(data, false, true)
+	sort.SliceStable(iocs, func(i, j int) bool {
+		elements := []string{iocs[i].Type.String(), iocs[j].Type.String()}
+		slice := sort.StringSlice(elements)
+		sort.Sort(slice)
+		return slice[0] == iocs[i].Type.String()
+	})
 	fmt.Println(iocs)
 
 	// Output: [google[.]com|Domain hxxp[://]google[.]com/path|URL]
