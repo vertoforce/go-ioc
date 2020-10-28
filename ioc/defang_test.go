@@ -47,6 +47,14 @@ func TestDefang(t *testing.T) {
 var FangTests = []DefangTest{
 	// Bitcoin n/a
 	// Hashes n/a
+	{
+		&IOC{"4375747cfd5c5ce3bb5819d82256300874f662c5db0f902a62ed4ed56901c203", SHA256},
+		&IOC{"4375747cfd5c5ce3bb5819d82256300874f662c5db0f902a62ed4ed56901c203", SHA256},
+	},
+	{
+		&IOC{"bcc21abb9d4ff575cf805bddbc5566a0f0bb28c740f99478b50d4b41b00b51b1", SHA256},
+		&IOC{"bcc21abb9d4ff575cf805bddbc5566a0f0bb28c740f99478b50d4b41b00b51b1", SHA256},
+	},
 	// Domains
 	{&IOC{"test(.)com", Domain}, &IOC{"test.com", Domain}},
 	{&IOC{"test(dot)com", Domain}, &IOC{"test.com", Domain}},
@@ -80,16 +88,22 @@ func TestFang(t *testing.T) {
 	// Test all the defanging tests
 	for _, test := range DefangTests {
 		// Do this kinda in reverse
-		if got := test.want.Fang(); !reflect.DeepEqual(got, test.input) {
-			t.Errorf("IOC %v expected %v but got %v", test.want.IOC, test.input.IOC, got.IOC)
-		}
+		t.Run(test.input.IOC, func(t *testing.T) {
+			if got := test.want.Fang(); !reflect.DeepEqual(got, test.input) {
+				t.Errorf("IOC %v expected %v but got %v", test.want.IOC, test.input.IOC, got.IOC)
+			}
+		})
+
 	}
 
 	// Now handle all the fang tests
 	for _, test := range FangTests {
-		if got := test.input.Fang(); !reflect.DeepEqual(got, test.want) {
-			t.Errorf("IOC %v expected %v but got %v", test.input.IOC, test.want.IOC, got.IOC)
-		}
+		t.Run(test.input.IOC, func(t *testing.T) {
+			if got := test.input.Fang(); !reflect.DeepEqual(got, test.want) {
+				t.Errorf("IOC %v expected %v but got %v", test.input.IOC, test.want.IOC, got.IOC)
+			}
+		})
+
 	}
 }
 
