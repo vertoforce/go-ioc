@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	testify "github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestParseIOC(t *testing.T) {
@@ -258,9 +259,13 @@ func TestGetIOCsReader(t *testing.T) {
 	}
 
 	for _, test := range tests {
-
 		t.Run(test.input, func(t *testing.T) {
-			iocs := GetIOCsReader(context.Background(), strings.NewReader(test.input), true, false)
+			iocs := make(chan *IOC)
+			go func() {
+				defer close(iocs)
+				err := GetIOCsReader(context.Background(), strings.NewReader(test.input), true, false, iocs)
+				require.NoError(t, err)
+			}()
 		outer:
 			for ioc := range iocs {
 				for _, wantedIOC := range test.want {

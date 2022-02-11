@@ -2,9 +2,10 @@ package ioc
 
 import (
 	"context"
-	"github.com/vertoforce/multiregex"
 	"io"
 	"io/ioutil"
+
+	"github.com/vertoforce/multiregex"
 )
 
 const (
@@ -53,47 +54,43 @@ func GetIOCs(data string, getFangedIOCs bool, standardizeDefangs bool) []*IOC {
 
 // GetIOCsReader Get iocs from reader
 // TODO: This is not deterministic output
-func GetIOCsReader(ctx context.Context, reader io.Reader, getFangedIOCs bool, standardizeDefangs bool) chan *IOC {
+func GetIOCsReader(ctx context.Context, reader io.Reader, getFangedIOCs bool, standardizeDefangs bool, matches chan *IOC) error {
 	// Combine all rules in to a RuleSet
 	ruleSet := multiregex.RuleSet{}
 	for _, rule := range iocRegexes {
 		ruleSet = append(ruleSet, rule)
 	}
 
-	matches := make(chan *IOC)
-
-	ctxMatching, cancelMatching := context.WithCancel(ctx)
 	// TODO: Add support for maxMatchLengths
-	matchesRaw := ruleSet.GetMatchedDataReader(ctxMatching, ioutil.NopCloser(reader), nil)
+	matchesRaw := ruleSet.GetMatchedDataReader(ctx, ioutil.NopCloser(reader), nil)
+	for match := range matchesRaw {
+		// Check context
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
 
-	go func() {
-		defer cancelMatching()
-		defer close(matches)
-
-		for match := range matchesRaw {
-			ioc := &IOC{IOC: string(match.Data)}
-			// Find what type this is
-			for t, rule := range iocRegexes {
-				if rule.String() == match.Rule.String() {
-					ioc.Type = t
-				}
-			}
-
-			// Only add if defanged or we are getting all fanged IOCs
-			if !ioc.IsFanged() || getFangedIOCs {
-				// Standardize Defangs
-				if standardizeDefangs {
-					ioc = ioc.Fang().Defang()
-				}
-
-				select {
-				case matches <- ioc:
-				case <-ctx.Done():
-					return
-				}
+		ioc := &IOC{IOC: string(match.Data)}
+		// Find what type this is
+		for t, rule := range iocRegexes {
+			if rule.String() == match.Rule.String() {
+				ioc.Type = t
 			}
 		}
-	}()
 
-	return matches
+		// Only add if defanged or we are getting all fanged IOCs
+		if !ioc.IsFanged() || getFangedIOCs {
+			// Standardize Defangs
+			if standardizeDefangs {
+				ioc = ioc.Fang().Defang()
+			}
+
+			select {
+			case matches <- ioc:
+			case <-ctx.Done():
+				return ctx.Err()
+			}
+		}
+	}
+
+	return nil
 }
