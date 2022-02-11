@@ -138,11 +138,7 @@ func GetIOCsCounts(iocs []*IOC) map[Type]int {
 	stats := make(map[Type]int)
 
 	for _, ioc := range iocs {
-		if _, ok := stats[ioc.Type]; ok {
-			stats[ioc.Type]++
-		} else {
-			stats[ioc.Type] = 1
-		}
+		stats[ioc.Type] = stats[ioc.Type] + 1
 	}
 
 	return stats
