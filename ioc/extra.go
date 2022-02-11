@@ -105,7 +105,7 @@ func getIOCsFromSelection(sel *goquery.Selection, iocs *[]*IOC, depth int) {
 		// Replace \n just in case
 		thisText = strings.ReplaceAll(thisText, "\n", "    ")
 		// Find IOCs
-		iocs := GetIOCs(thisText, false, false)
+		iocs := GetIOCs(thisText, false)
 		for _, ioc := range iocs {
 			addIfUnique(ioc)
 		}

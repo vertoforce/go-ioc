@@ -163,14 +163,13 @@ func TestGetIOCs(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.input, func(t *testing.T) {
-			if iocs := GetIOCs(test.input, true, false); !testify.ElementsMatch(t, iocs, test.want) {
+			if iocs := GetIOCs(test.input, true); !testify.ElementsMatch(t, iocs, test.want) {
 				t.Errorf("IOCType(%q), found %v =/= wanted %v", test.input, iocs, test.want)
 			}
 		})
-
 	}
 }
-func TestStandardizedDefangs(t *testing.T) {
+func TestStandardizeDefangs(t *testing.T) {
 	testsStandardizedDefangs := []struct {
 		input string
 		want  []*IOC
@@ -190,7 +189,9 @@ func TestStandardizedDefangs(t *testing.T) {
 
 	for _, test := range testsStandardizedDefangs {
 		t.Run(test.input, func(t *testing.T) {
-			if iocs := GetIOCs(test.input, true, true); !reflect.DeepEqual(iocs, test.want) {
+			iocs := GetIOCs(test.input, true)
+			StandardizeDefangs(iocs)
+			if !reflect.DeepEqual(iocs, test.want) {
 				t.Errorf("[standardizedDefang=true] IOCType(%q), found %v =/= wanted %v", test.input, iocs, test.want)
 			}
 		})
@@ -217,7 +218,9 @@ func TestAllFanged(t *testing.T) {
 
 	for _, test := range testsAllFanged {
 		t.Run(test.input, func(t *testing.T) {
-			if iocs := GetIOCs(test.input, false, true); !reflect.DeepEqual(iocs, test.want) {
+			iocs := GetIOCs(test.input, false)
+			StandardizeDefangs(iocs)
+			if !reflect.DeepEqual(iocs, test.want) {
 				t.Errorf("[allFanged=false] IOCType(%q), found %v =/= wanted %v", test.input, iocs, test.want)
 			}
 		})
@@ -263,7 +266,7 @@ func TestGetIOCsReader(t *testing.T) {
 			iocs := make(chan *IOC)
 			go func() {
 				defer close(iocs)
-				err := GetIOCsReader(context.Background(), strings.NewReader(test.input), true, false, iocs)
+				err := GetIOCsReader(context.Background(), strings.NewReader(test.input), true, iocs)
 				require.NoError(t, err)
 			}()
 		outer:

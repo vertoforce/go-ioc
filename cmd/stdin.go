@@ -18,7 +18,10 @@ var stdinCommand = &cobra.Command{
 		if err != nil {
 			fmt.Println(err)
 		}
-		iocs := ioc.GetIOCs(string(stdin), getFangedIOCs, standardizeDefangs)
+		iocs := ioc.GetIOCs(string(stdin), getFangedIOCs)
+		if standardizeDefangs {
+			ioc.StandardizeDefangs(iocs)
+		}
 		printIOCHelper(iocs)
 	},
 }
