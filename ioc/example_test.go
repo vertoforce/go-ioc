@@ -25,7 +25,14 @@ func ExampleGetIOCs() {
 func ExampleGetIOCsReader() {
 	data := `this is a bad url http[://]google[.]com/path`
 
-	iocs := GetIOCsReader(context.Background(), strings.NewReader(data), false, true)
+	iocs := make(chan *IOC)
+	go func() {
+		defer close(iocs)
+		err := GetIOCsReader(context.Background(), strings.NewReader(data), false, true, iocs)
+		if err != nil {
+			panic(err)
+		}
+	}()
 	for ioc := range iocs {
 		fmt.Println(ioc)
 	}
