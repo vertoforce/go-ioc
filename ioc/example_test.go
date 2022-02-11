@@ -9,8 +9,9 @@ import (
 func ExampleGetIOCs() {
 	data := `this is a bad url http[://]google[.]com/path`
 
-	iocs := GetIOCs(data, false, true)
+	iocs := GetIOCs(data, false)
 	iocs = SortByType(iocs)
+	StandardizeDefangs(iocs)
 	fmt.Println(iocs)
 
 	// Output: [google[.]com|Domain hxxp[://]google[.]com/path|URL]
@@ -22,17 +23,15 @@ func ExampleGetIOCsReader() {
 	iocs := make(chan *IOC)
 	go func() {
 		defer close(iocs)
-		err := GetIOCsReader(context.Background(), reader, false, true, iocs)
+		err := GetIOCsReader(context.Background(), reader, false, iocs)
 		if err != nil {
 			panic(err)
 		}
 	}()
 	for ioc := range iocs {
+		// Print IOC
 		fmt.Println(ioc)
 	}
-
-	// Output: hxxp[://]google[.]com/path|URL
-	// google[.]com|Domain
 }
 
 func ExampleIOC_Defang() {

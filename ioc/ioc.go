@@ -15,7 +15,7 @@ const (
 // ParseIOC Parses a single IOC and gets its type.
 // It will only return the highest IOC type (so if it's an email, it will return the email, not the domain in the email)
 func ParseIOC(ioc string) *IOC {
-	iocs := GetIOCs(ioc, true, false)
+	iocs := GetIOCs(ioc, true)
 	ret := &IOC{}
 	for _, ioc := range iocs {
 		// Only return the "highest" IOC
@@ -27,8 +27,9 @@ func ParseIOC(ioc string) *IOC {
 	return ret
 }
 
-// GetIOCs Return a slice of IOCs from the provided data
-func GetIOCs(data string, getFangedIOCs bool, standardizeDefangs bool) []*IOC {
+// GetIOCs Return a slice of IOCs from the provided data.
+// getFangedIOCs will also return IOCs that are fanged (ex: google.com).
+func GetIOCs(data string, getFangedIOCs bool) []*IOC {
 	var iocs []*IOC
 
 	// Loop through the types to find and search the provided data
@@ -39,11 +40,6 @@ func GetIOCs(data string, getFangedIOCs bool, standardizeDefangs bool) []*IOC {
 
 			// Only add if defanged or we are getting all fanged IOCs
 			if !ioc.IsFanged() || getFangedIOCs {
-				// Standardize Defangs
-				if standardizeDefangs {
-					ioc = ioc.Fang().Defang()
-				}
-
 				iocs = append(iocs, ioc)
 			}
 		}
@@ -54,7 +50,7 @@ func GetIOCs(data string, getFangedIOCs bool, standardizeDefangs bool) []*IOC {
 
 // GetIOCsReader Get iocs from reader
 // TODO: This is not deterministic output
-func GetIOCsReader(ctx context.Context, reader io.Reader, getFangedIOCs bool, standardizeDefangs bool, matches chan *IOC) error {
+func GetIOCsReader(ctx context.Context, reader io.Reader, getFangedIOCs bool, matches chan *IOC) error {
 	// Combine all rules in to a RuleSet
 	ruleSet := multiregex.RuleSet{}
 	for _, rule := range iocRegexes {
@@ -79,11 +75,6 @@ func GetIOCsReader(ctx context.Context, reader io.Reader, getFangedIOCs bool, st
 
 		// Only add if defanged or we are getting all fanged IOCs
 		if !ioc.IsFanged() || getFangedIOCs {
-			// Standardize Defangs
-			if standardizeDefangs {
-				ioc = ioc.Fang().Defang()
-			}
-
 			select {
 			case matches <- ioc:
 			case <-ctx.Done():
@@ -93,4 +84,12 @@ func GetIOCsReader(ctx context.Context, reader io.Reader, getFangedIOCs bool, st
 	}
 
 	return nil
+}
+
+// StandardizeDefangs will run all IOCs through a Fang() then Defang(), which will make all
+// the IOCs of the same defanged style.
+func StandardizeDefangs(iocs []*IOC) {
+	for i, ioc := range iocs {
+		iocs[i] = ioc.Fang().Defang()
+	}
 }
