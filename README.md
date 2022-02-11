@@ -50,6 +50,9 @@ docker run -it vertoforce/go-ioc help
 ```go
 data := `this is a bad url http[://]google[.]com/path`
 iocs := GetIOCs(data, false, true)
+// iocs is a list with 2 IOCs (google[.]com and the URL `http[://]google[.]com/path`)
+// See example_test.go
+iocs[0].IsFanged() // -> false because `http[://]google[.]com/path` is not fanged
 ```
 
 ### Defang / Fang

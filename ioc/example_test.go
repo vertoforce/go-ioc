@@ -3,7 +3,6 @@ package ioc
 import (
 	"context"
 	"fmt"
-	"sort"
 	"strings"
 )
 
@@ -11,24 +10,19 @@ func ExampleGetIOCs() {
 	data := `this is a bad url http[://]google[.]com/path`
 
 	iocs := GetIOCs(data, false, true)
-	sort.SliceStable(iocs, func(i, j int) bool {
-		elements := []string{iocs[i].Type.String(), iocs[j].Type.String()}
-		slice := sort.StringSlice(elements)
-		sort.Sort(slice)
-		return slice[0] == iocs[i].Type.String()
-	})
+	iocs = SortByType(iocs)
 	fmt.Println(iocs)
 
 	// Output: [google[.]com|Domain hxxp[://]google[.]com/path|URL]
 }
 
 func ExampleGetIOCsReader() {
-	data := `this is a bad url http[://]google[.]com/path`
+	reader := strings.NewReader(`this is a bad url http[://]google[.]com/path`)
 
 	iocs := make(chan *IOC)
 	go func() {
 		defer close(iocs)
-		err := GetIOCsReader(context.Background(), strings.NewReader(data), false, true, iocs)
+		err := GetIOCsReader(context.Background(), reader, false, true, iocs)
 		if err != nil {
 			panic(err)
 		}
