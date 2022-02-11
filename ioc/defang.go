@@ -34,7 +34,7 @@ var defangReplacements = defangMap{
 	},
 }
 
-// Defang Takes an IOC and defangs it using the standard defrangReplacements
+// Defang Takes an IOC and defangs it using the standard defangReplacements
 func (ioc *IOC) Defang() *IOC {
 	copy := *ioc
 	ioc = &copy
@@ -77,7 +77,8 @@ var fangReplacements = map[Type][]regexReplacement{
 	},
 }
 
-// Fang Takes an IOC and removes the defanging stuff from it
+// Fang Takes an IOC and removes the defanging stuff from it (converts to a fanged IOC).
+// Ex: john[AT]gmail[dot]com -> john@gmail.com
 func (ioc *IOC) Fang() *IOC {
 	copy := *ioc
 	ioc = &copy
