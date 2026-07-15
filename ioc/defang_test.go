@@ -156,7 +156,7 @@ func TestIsFanged(t *testing.T) {
 
 	for _, test := range tests {
 		if test.input.IsFanged() != test.want {
-			t.Errorf("Incorrect fanging result for " + test.input.String())
+			t.Error("Incorrect fanging result for " + test.input.String())
 		}
 	}
 }

@@ -1,7 +1,7 @@
 # Golang IOC Library
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/vertoforce/go-ioc)](https://goreportcard.com/report/github.com/vertoforce/go-ioc)
-[![Documentation](https://godoc.org/github.com/vertoforce/go-ioc?status.svg)](https://godoc.org/github.com/vertoforce/go-ioc)
+[![Go Reference](https://pkg.go.dev/badge/github.com/vertoforce/go-ioc.svg)](https://pkg.go.dev/github.com/vertoforce/go-ioc)
 
 This library provides functions to extract IOCs from text or a reader.  You can also fang and defang IOCs.
 
@@ -93,10 +93,10 @@ fmt.Println(ioc)
 
 ## How
 
-The finding IOCs in readers uses these two libraries:
-
-- [multiregex](https://github.com/vertoforce/multiregex)
-- [streamregex](https://github.com/vertoforce/streamregex)
+Reader scanning is self-contained: `GetIOCsReader` does a single streaming pass with a
+sliding window that retains enough trailing bytes for matches spanning chunk boundaries,
+running every IOC regex over each window and deduping across the overlap. The TLD list
+in the Domain regex is generated from IANA (see `gen/tlds`, `go generate ./ioc/...`).
 
 ## IOC Methods
 
