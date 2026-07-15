@@ -75,6 +75,11 @@ func TestGetIOCs(t *testing.T) {
 		{"\"test@test.com\"", []*IOC{{"test.com", Domain}, {"test@test.com", Email}}},
 		{"test[@]test.com", []*IOC{{"test.com", Domain}, {"test[@]test.com", Email}}},
 		{"test(@)test.com", []*IOC{{"test.com", Domain}, {"test(@)test.com", Email}}},
+		// Issue #4: international characters and wider local parts
+		{"jörg@example.com", []*IOC{{"example.com", Domain}, {"jörg@example.com", Email}}},
+		{"用户@例子.com", []*IOC{{"用户@例子.com", Email}}},
+		{"john.doe+tag@sub.example.co.uk", []*IOC{{"sub.example.co.uk", Domain}, {"john.doe+tag@sub.example.co.uk", Email}}},
+		{"a_b%c@d-e.io", []*IOC{{"d-e.io", Domain}, {"a_b%c@d-e.io", Email}}},
 
 		// Domains
 		{"example.com", []*IOC{{"example.com", Domain}}},
