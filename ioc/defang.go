@@ -119,7 +119,12 @@ func (ioc *IOC) IsFanged() bool {
 		ioc.Type == SHA256 ||
 		ioc.Type == SHA512 ||
 		ioc.Type == File ||
-		ioc.Type == CVE {
+		ioc.Type == CVE ||
+		ioc.Type == MITRE ||
+		ioc.Type == MAC ||
+		ioc.Type == Monero ||
+		ioc.Type == Ethereum ||
+		ioc.Type == SSDeep {
 		return false
 	}
 
