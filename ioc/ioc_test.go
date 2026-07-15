@@ -2,9 +2,13 @@ package ioc
 
 import (
 	"context"
+	"errors"
+	"io"
 	"reflect"
+	"sort"
 	"strings"
 	"testing"
+	"testing/iotest"
 
 	testify "github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -284,5 +288,144 @@ func TestGetIOCsReader(t *testing.T) {
 				t.Errorf("Did not find %v in what we wanted %v", ioc, test.want)
 			}
 		})
+	}
+}
+
+// chunkyReader returns data in fixed-size chunks, and can optionally deliver the
+// final chunk together with io.EOF (the (n>0, io.EOF) case that the old multiregex
+// stream duplicator dropped).
+type chunkyReader struct {
+	data     []byte
+	pos      int
+	chunk    int
+	eofWithN bool
+}
+
+func (r *chunkyReader) Read(p []byte) (int, error) {
+	if r.pos >= len(r.data) {
+		return 0, io.EOF
+	}
+	n := r.chunk
+	if n > len(p) {
+		n = len(p)
+	}
+	if r.pos+n > len(r.data) {
+		n = len(r.data) - r.pos
+	}
+	copy(p, r.data[r.pos:r.pos+n])
+	r.pos += n
+	if r.pos >= len(r.data) && r.eofWithN {
+		return n, io.EOF
+	}
+	return n, nil
+}
+
+// readerIOCs drains GetIOCsReader into a sorted "IOC|Type" slice.
+func readerIOCs(t *testing.T, r io.Reader, getFanged bool) []string {
+	t.Helper()
+	out := make(chan *IOC)
+	var errCh = make(chan error, 1)
+	go func() {
+		defer close(out)
+		errCh <- GetIOCsReader(context.Background(), r, getFanged, out)
+	}()
+	var got []string
+	for ioc := range out {
+		got = append(got, ioc.String())
+	}
+	require.NoError(t, <-errCh)
+	sort.Strings(got)
+	return got
+}
+
+func stringIOCs(data string, getFanged bool) []string {
+	iocs := GetIOCs(data, getFanged)
+	var got []string
+	for _, ioc := range iocs {
+		got = append(got, ioc.String())
+	}
+	sort.Strings(got)
+	return got
+}
+
+// TestGetIOCsReaderShortReads verifies that a reader delivering data in awkward
+// short chunks (one byte at a time, small chunks, and a final chunk bundled with
+// io.EOF) yields exactly the same IOCs as the equivalent plain-string GetIOCs call.
+// This is the regression guard for the dropped multiregex dependency, whose stream
+// duplicator corrupted data on short reads.
+func TestGetIOCsReaderShortReads(t *testing.T) {
+	inputs := []string{
+		"contact bad@evil.com or visit http://malware.example.com/payload.exe",
+		"1.2.3.4 8.8.8.8 2001:db8::ff00:42:8329 CVE-2021-44228",
+		"hash 874058e8d8582bf85c115ce319c5b0af file report.pdf domain test.com",
+		"1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2 hxxps://185[.]159[.]82[.]15/c644[.]php",
+		strings.Repeat("noise ", 500) + "needle@target.org " + strings.Repeat("filler.txt ", 200),
+	}
+
+	for _, getFanged := range []bool{true, false} {
+		for _, input := range inputs {
+			want := stringIOCs(input, getFanged)
+
+			readers := map[string]io.Reader{
+				"plain":       strings.NewReader(input),
+				"onebyte":     iotest.OneByteReader(strings.NewReader(input)),
+				"chunk7":      &chunkyReader{data: []byte(input), chunk: 7},
+				"chunk64":     &chunkyReader{data: []byte(input), chunk: 64},
+				"eofWithData": &chunkyReader{data: []byte(input), chunk: 13, eofWithN: true},
+			}
+			for name, r := range readers {
+				got := readerIOCs(t, r, getFanged)
+				if !reflect.DeepEqual(got, want) {
+					t.Errorf("reader %q (getFanged=%v) input=%q\n got=%v\nwant=%v", name, getFanged, input, got, want)
+				}
+			}
+		}
+	}
+}
+
+// errAfterReader returns some data then a non-EOF error, which must surface.
+type errAfterReader struct {
+	data []byte
+	pos  int
+	err  error
+}
+
+func (r *errAfterReader) Read(p []byte) (int, error) {
+	if r.pos < len(r.data) {
+		n := copy(p, r.data[r.pos:])
+		r.pos += n
+		return n, nil
+	}
+	return 0, r.err
+}
+
+func TestGetIOCsReaderSurfacesReadError(t *testing.T) {
+	sentinel := errors.New("boom")
+	r := &errAfterReader{data: []byte("8.8.8.8 "), err: sentinel}
+	out := make(chan *IOC)
+	go func() {
+		defer close(out)
+		for range out {
+		}
+	}()
+	err := GetIOCsReader(context.Background(), r, true, out)
+	if !errors.Is(err, sentinel) {
+		t.Errorf("expected read error to surface, got %v", err)
+	}
+}
+
+func TestGetIOCsReaderContextCancel(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	out := make(chan *IOC)
+	go func() {
+		defer close(out)
+		for range out {
+		}
+	}()
+	// Large input so scanning has to iterate the read loop and observe cancellation.
+	err := GetIOCsReader(ctx, strings.NewReader(strings.Repeat("8.8.8.8 ", 10000)), true, out)
+	if !errors.Is(err, context.Canceled) {
+		t.Errorf("expected context.Canceled, got %v", err)
 	}
 }
