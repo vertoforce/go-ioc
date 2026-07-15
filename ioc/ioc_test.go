@@ -127,8 +127,9 @@ func TestGetIOCs(t *testing.T) {
 		{"test.two.plist", []*IOC{{"test.two.plist", File}}},
 		{"test.html", []*IOC{{"test.html", File}}},
 		{"test.two.html", []*IOC{{"test.two.html", File}}},
-		{"test.zip", []*IOC{{"test.zip", File}}},
-		{"test.two.zip", []*IOC{{"test.two.zip", File}}},
+		// .zip is now a real gTLD, so these are ambiguously File and Domain.
+		{"test.zip", []*IOC{{"test.zip", File}, {"test.zip", Domain}}},
+		{"test.two.zip", []*IOC{{"test.two.zip", File}, {"test.two.zip", Domain}}},
 		{"test.tar.gz", []*IOC{{"test.tar.gz", File}}},
 		{"test.two.tar.gz", []*IOC{{"test.two.tar.gz", File}}},
 		{".test.", nil},
