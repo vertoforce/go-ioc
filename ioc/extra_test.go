@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -13,6 +12,9 @@ import (
 )
 
 func TestGetIOCsFromRSS(t *testing.T) {
+	if os.Getenv("GOIOC_NETWORK_TESTS") == "" {
+		t.Skip("network test; set GOIOC_NETWORK_TESTS=1 to run")
+	}
 	// Test failure
 	_, err := GetIOCsFromRSS(context.Background(), "error")
 	if err == nil {
@@ -21,7 +23,7 @@ func TestGetIOCsFromRSS(t *testing.T) {
 
 	iocs, err := GetIOCsFromRSS(context.Background(), "https://www.anomali.com/site/blog-rss")
 	if err != nil {
-		t.Errorf(err.Error())
+		t.Error(err.Error())
 	}
 
 	// TODO Add more checks
@@ -32,6 +34,9 @@ func TestGetIOCsFromRSS(t *testing.T) {
 }
 
 func TestGetIOCsFromURL(t *testing.T) {
+	if os.Getenv("GOIOC_NETWORK_TESTS") == "" {
+		t.Skip("network test; set GOIOC_NETWORK_TESTS=1 to run")
+	}
 	// Test failure
 	_, err := GetIOCsFromURLPage(nil)
 	if err == nil {
@@ -73,12 +78,12 @@ func TestGetIOCsFromURL(t *testing.T) {
 	for te := range tests {
 		req, err := http.NewRequest("GET", tests[te].URL, nil)
 		if err != nil {
-			t.Errorf("Errored on this test: " + tests[te].URL)
+			t.Error("Errored on this test: " + tests[te].URL)
 			continue
 		}
 		iocs, err := GetIOCsFromURLPage(req)
 		if err != nil {
-			t.Errorf("Errored on this test: " + tests[te].URL)
+			t.Error("Errored on this test: " + tests[te].URL)
 		}
 		// check to make sure we found each expected IOC
 	outer:
@@ -89,7 +94,7 @@ func TestGetIOCsFromURL(t *testing.T) {
 				}
 			}
 			// We didn't find that IOC
-			t.Errorf("We did not find this IOC: " + tests[te].ExpectedIOCs[e].IOC)
+			t.Error("We did not find this IOC: " + tests[te].ExpectedIOCs[e].IOC)
 		}
 
 		// Check if there are any duplicates
@@ -97,7 +102,7 @@ func TestGetIOCsFromURL(t *testing.T) {
 		for i, ioc := range iocs {
 			for k := i + 1; k < len(iocs); k++ {
 				if ioc.IOC == iocs[k].IOC {
-					t.Errorf("Found duplicate IOC: " + ioc.IOC)
+					t.Error("Found duplicate IOC: " + ioc.IOC)
 					continue outerloop
 				}
 			}
@@ -112,7 +117,7 @@ func BenchmarkGetIOCsFromHTML(b *testing.B) {
 			fmt.Printf("prevent panic by handling failure accessing a path %q: %v\n", path, err)
 			return err
 		}
-		fileContentsB, err := ioutil.ReadFile(path)
+		fileContentsB, err := os.ReadFile(path)
 		if err != nil {
 			return nil
 		}
@@ -171,7 +176,7 @@ func TestIOCsSortByType(t *testing.T) {
 	}
 	for i, test := range tests {
 		if got := SortByType(test.input); !reflect.DeepEqual(got, test.want) {
-			t.Errorf("Failed to get desired result on test " + fmt.Sprint(i))
+			t.Error("Failed to get desired result on test " + fmt.Sprint(i))
 		}
 	}
 }
@@ -245,7 +250,7 @@ func TestGetIOCsStats(t *testing.T) {
 
 	for i, test := range tests {
 		if got := GetIOCsCounts(test.input); !reflect.DeepEqual(got, test.want) {
-			t.Errorf("Failed to get desired result on test " + fmt.Sprint(i))
+			t.Error("Failed to get desired result on test " + fmt.Sprint(i))
 		}
 	}
 }

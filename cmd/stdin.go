@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -14,7 +14,7 @@ var stdinCommand = &cobra.Command{
 	Short: "Find IOCs from stdin",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		stdin, err := ioutil.ReadAll(os.Stdin)
+		stdin, err := io.ReadAll(os.Stdin)
 		if err != nil {
 			fmt.Println(err)
 		}

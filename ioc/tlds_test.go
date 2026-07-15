@@ -32,7 +32,7 @@ func TestModernTLDs(t *testing.T) {
 
 	// Defanged dot must still match against the modern TLDs.
 	defanged := map[string]string{
-		"cool[.]dev":     "cool[.]dev",
+		"cool[.]dev":      "cool[.]dev",
 		"storage(.)cloud": "storage(.)cloud",
 	}
 	for in, want := range defanged {

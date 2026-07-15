@@ -23,6 +23,7 @@ func (ioc *IOC) String() string {
 type Type int
 
 // Types ordered in list of largest to smallest (so an email is > domain since an email contains a domain)
+//
 //go:generate stringer -type=Type
 const (
 	Unknown Type = iota
