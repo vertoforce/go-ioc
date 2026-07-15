@@ -41,6 +41,12 @@ const (
 	CAPEC
 	CWE
 	CPE
+	// Appended after CPE so existing enum values do not shift.
+	MITRE
+	MAC
+	Monero
+	Ethereum
+	SSDeep
 )
 
 // Types of all IOCs
@@ -60,6 +66,11 @@ var Types = []Type{
 	CAPEC,
 	CWE,
 	CPE,
+	MITRE,
+	MAC,
+	Monero,
+	Ethereum,
+	SSDeep,
 }
 
 // -- []IOC helpers --
