@@ -2,6 +2,7 @@ package ioc
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -195,6 +196,31 @@ func TestPrintIOCs(t *testing.T) {
 		if got := PrintIOCs(test.input, "csv"); !reflect.DeepEqual(got, test.want) {
 			t.Errorf("Failed to get desired result on test %d", i)
 		}
+	}
+}
+
+func TestPrintIOCsJSON(t *testing.T) {
+	iocs := []*IOC{
+		{"8.8.8.8", IPv4},
+		{"evil.com", Domain},
+	}
+	got := PrintIOCs(iocs, "json")
+
+	var parsed []struct {
+		IOC  string `json:"ioc"`
+		Type string `json:"type"`
+	}
+	if err := json.Unmarshal([]byte(got), &parsed); err != nil {
+		t.Fatalf("output is not valid JSON: %v\n%s", err, got)
+	}
+	if len(parsed) != 2 {
+		t.Fatalf("expected 2 entries, got %d: %s", len(parsed), got)
+	}
+	if parsed[0].IOC != "8.8.8.8" || parsed[0].Type != "IPv4" {
+		t.Errorf("entry 0 wrong: %+v", parsed[0])
+	}
+	if parsed[1].IOC != "evil.com" || parsed[1].Type != "Domain" {
+		t.Errorf("entry 1 wrong: %+v", parsed[1])
 	}
 }
 

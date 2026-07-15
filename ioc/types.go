@@ -2,6 +2,7 @@ package ioc
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"sort"
 	"text/tabwriter"
@@ -73,13 +74,15 @@ func SortByType(iocs []*IOC) []*IOC {
 }
 
 // PrintIOCs Takes IOCs and prints them according to the format desired
-// Format can be csv or table
+// Format can be csv, table, or json
 func PrintIOCs(iocs []*IOC, format string) string {
 	switch format {
 	case "csv":
 		return PrintIOCsCSV(iocs)
 	case "table":
 		return PrintIOCsTable(iocs)
+	case "json":
+		return PrintIOCsJSON(iocs)
 	default:
 		return PrintIOCsCSV(iocs)
 	}
@@ -97,6 +100,23 @@ func PrintIOCsCSV(iocs []*IOC) string {
 	}
 
 	return ret
+}
+
+// PrintIOCsJSON Takes []IOC and returns them as a JSON array of {ioc,type} objects
+func PrintIOCsJSON(iocs []*IOC) string {
+	type jsonIOC struct {
+		IOC  string `json:"ioc"`
+		Type string `json:"type"`
+	}
+	out := make([]jsonIOC, 0, len(iocs))
+	for _, ioc := range iocs {
+		out = append(out, jsonIOC{IOC: ioc.IOC, Type: ioc.Type.String()})
+	}
+	b, err := json.MarshalIndent(out, "", "  ")
+	if err != nil {
+		return ""
+	}
+	return string(b)
 }
 
 // PrintIOCsTable Takes []IOC and returns them in a csv format
