@@ -45,7 +45,7 @@ func init() {
 	rootCmd.AddCommand(stdinCommand)
 
 	// Root flags
-	rootCmd.PersistentFlags().StringVarP(&iocPrintFormat, "format", "f", "csv", "Print format for printing IOCs.  Options include: csv, table")
+	rootCmd.PersistentFlags().StringVarP(&iocPrintFormat, "format", "f", "csv", "Print format for printing IOCs.  Options include: csv, table, json")
 	rootCmd.PersistentFlags().StringVarP(&outputFile, "output", "o", "", "Save IOCs to file")
 	rootCmd.PersistentFlags().BoolVar(&iocPrintStats, "stats", false, "Print count of each IOC found at start of output")
 	rootCmd.PersistentFlags().BoolVarP(&iocSort, "sort", "s", true, "Sort IOCs by their type")
