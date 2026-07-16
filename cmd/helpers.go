@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/vertoforce/go-ioc/ioc"
@@ -27,7 +26,7 @@ func printIOCHelper(iocs []*ioc.IOC) {
 
 	// Write to file if specified
 	if outputFile != "" {
-		ioutil.WriteFile(outputFile, []byte(ioc.PrintIOCs(iocs, iocPrintFormat)), os.ModePerm)
+		os.WriteFile(outputFile, []byte(ioc.PrintIOCs(iocs, iocPrintFormat)), os.ModePerm)
 	} else {
 		fmt.Println(ioc.PrintIOCs(iocs, iocPrintFormat))
 	}
